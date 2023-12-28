@@ -1,3 +1,4 @@
+import os
 import sys
 import requests
 
@@ -31,6 +32,15 @@ def download_large_file(url, destination_path):
 	except Exception as e:
 		print(f"An error occurred: " + str(e))
 
+def basename_from_url(url):
+	try:
+		name = url.lower().split(".safetensors")[-2].split("/")[-1]
+	except:
+		name = ""
+	if not name:
+		return ("filename")
+	return (name)
+
 if (__name__ == "__main__"):
 	if (len(sys.argv) < 2):
 		print("usage: <script> <url> <filename>")
@@ -39,11 +49,12 @@ if (__name__ == "__main__"):
 	if (len(sys.argv) > 2):
 		name = sys.argv[2]
 	else:
-		try:
-			name = url.lower().split(".safetensors")[-2].split("/")[-1]
-		except:
-			name = ""
+		name = basename_from_url(url)
+	if os.path.exists(name) and (os.path.isdir(name)):
+		name += "/" + basename_from_url(url)
 	for k in "\r\t\n\v\f ":
+		while ("//" in name):
+			name = name.replace("//", "/")
 		name = name.lower().replace(k, "")
 	name = name.replace(".safetensors", "") + ".safetensors"
 	download_large_file(url, name)
