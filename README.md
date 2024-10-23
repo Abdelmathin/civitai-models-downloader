@@ -1,1 +1,0 @@
-# civitai-models-downloader
